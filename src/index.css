@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); /* Subtle gradient */
+  color: #FFFFFF; /* White */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Orbitron', sans-serif;
+}
+
+button {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.5); /* Brighter blue glow */
+}
+
+.bg-gray-800 {
+  background: linear-gradient(135deg, #1E293B 0%, #334155 100%); /* Vibrant card gradient */
+}
+
+.bg-gray-700 {
+  background-color: #334155; /* Darker gray for inputs */
+}
+
+.border-gray-600 {
+  border-color: #475569; /* Gray for input borders */
+}
+
+.text-blue-400 {
+  color: #60A5FA; /* Brighter blue */
+}
+
+.bg-blue-500 {
+  background-color: #60A5FA; /* Brighter blue */
+}
+
+.bg-blue-600 {
+  background-color: #3B82F6; /* Slightly darker blue for hover */
+}
+
+.bg-purple-500 {
+  background-color: #C4B5FD; /* Brighter purple */
+}
+
+.bg-purple-600 {
+  background-color: #A78BFA; /* Slightly darker purple for hover */
+}
+
+.text-gray-300 {
+  color: #D1D5DB; /* Light gray */
+}
+
+.text-green-400 {
+  color: #34D399; /* Green for completed */
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Remove borders for cleaner look */
+.no-border {
+  border: none;
+}
