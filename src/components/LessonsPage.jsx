@@ -102,9 +102,9 @@ const LessonsPage = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex items-center justify-center bg-gray-900"
+      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex items-center justify-center"
     >
-      Loading...
+      <p className="text-xl">Loading...</p>
     </motion.div>
   );
 
@@ -113,11 +113,11 @@ const LessonsPage = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen text-white p-4 sm:p-6 md:p-8 bg-gray-900 fade-in"
+      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex flex-col items-center"
     >
-      <h1 className="text-2xl sm:text-3xl md:text-4xl mb-4 text-center text-blue-400 font-bold">Lessons</h1>
-      <div className="mb-6 max-w-md mx-auto">
-        <p className="text-gray-300 text-center mb-2">Progress: {completedLessons.length}/{lessons.length}</p>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl mb-4 text-center text-blue-400 font-bold">Lessons</h1>
+      <div className="mb-6 max-w-md w-full">
+        <p className="text-xl text-center text-gray-300 mb-2">Progress: {completedLessons.length}/{lessons.length}</p>
         <div className="w-full bg-gray-700 rounded-full h-2.5">
           <motion.div
             className="bg-blue-500 h-2.5 rounded-full"
@@ -127,7 +127,7 @@ const LessonsPage = () => {
           />
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
         {lessons.map((lesson) => (
           <motion.div
             key={lesson.id}
@@ -137,16 +137,16 @@ const LessonsPage = () => {
             whileHover={{ scale: 1.03 }}
             className="p-6 bg-gray-800 rounded-lg shadow-md no-border"
           >
-            <h2 className="text-xl sm:text-2xl mb-2 text-blue-400 font-bold">{lesson.title}</h2>
-            <p className="text-sm sm:text-base text-gray-300 mb-4">{lesson.content}</p>
+            <h2 className="text-2xl mb-2 text-blue-400 font-bold">{lesson.title}</h2>
+            <p className="text-xl text-gray-300 mb-4">{lesson.content}</p>
             {completedLessons.includes(lesson.id) ? (
-              <span className="text-green-400 font-semibold">Completed</span>
+              <span className="text-green-400 font-semibold text-xl">Completed</span>
             ) : (
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => markAsCompleted(lesson.id)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                className="bg-yellow-400 text-gray-900 px-4 py-2 rounded-md hover:bg-yellow-500 transition text-xl"
               >
                 Mark as Completed
               </motion.button>

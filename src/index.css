@@ -1,17 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  font-family: 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); /* Subtle gradient */
-  color: #FFFFFF; /* White */
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #111827 0%, #1F2937 100%); /* Dark gradient like Succinct */
+  color: #FFFFFF; /* White text */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 2.5rem; /* Larger for accessibility */
+}
+
+h2 {
+  font-size: 1.875rem;
+}
+
+p, li, input, textarea, button {
+  font-size: 1.25rem; /* Larger for readability */
 }
 
 button {
@@ -19,40 +38,40 @@ button {
 }
 
 button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 10px rgba(96, 165, 250, 0.5); /* Brighter blue glow */
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); /* Blue glow */
 }
 
 .bg-gray-800 {
-  background: linear-gradient(135deg, #1E293B 0%, #334155 100%); /* Vibrant card gradient */
+  background: linear-gradient(135deg, #1F2937 0%, #374151 100%); /* Card gradient */
 }
 
 .bg-gray-700 {
-  background-color: #334155; /* Darker gray for inputs */
+  background-color: #374151; /* Input background */
 }
 
 .border-gray-600 {
-  border-color: #475569; /* Gray for input borders */
+  border-color: #4B5563; /* Input borders */
 }
 
 .text-blue-400 {
-  color: #60A5FA; /* Brighter blue */
+  color: #60A5FA; /* Bright blue */
 }
 
 .bg-blue-500 {
-  background-color: #60A5FA; /* Brighter blue */
+  background-color: #3B82F6; /* Vibrant blue */
 }
 
 .bg-blue-600 {
-  background-color: #3B82F6; /* Slightly darker blue for hover */
+  background-color: #2563EB; /* Hover blue */
 }
 
-.bg-purple-500 {
-  background-color: #C4B5FD; /* Brighter purple */
+.bg-yellow-400 {
+  background-color: #FCD34D; /* Succinct’s yellow for CTAs */
 }
 
-.bg-purple-600 {
-  background-color: #A78BFA; /* Slightly darker purple for hover */
+.bg-yellow-500 {
+  background-color: #FBBF24; /* Hover yellow */
 }
 
 .text-gray-300 {
@@ -72,7 +91,13 @@ button:hover {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Remove borders for cleaner look */
 .no-border {
   border: none;
+}
+
+/* Center content */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
 }

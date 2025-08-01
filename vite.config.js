@@ -3,12 +3,11 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  root: '.', // Set root to project directory
+  build: {
+    outDir: 'dist', // Output to dist/ folder
+  },
   server: {
-    proxy: {
-      '/api/hf': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-      },
-    },
+    open: true, // Open browser on dev
   },
 });
