@@ -22,9 +22,9 @@ const ProfilePage = () => {
           .single();
         if (profileError && profileError.code !== 'PGRST116') {
           console.error('Error fetching username:', profileError);
-          setUsername(session.user.email);
+          setUsername(session.user.email.split('@')[0]);
         } else {
-          setUsername(profileData?.username || session.user.email);
+          setUsername(profileData?.username || session.user.email.split('@')[0]);
         }
 
         const { data: pointsData, error: pointsError } = await supabase
@@ -72,9 +72,9 @@ const ProfilePage = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex items-center justify-center bg-gray-900"
+      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex items-center justify-center"
     >
-      Loading...
+      <p className="text-xl">Loading...</p>
     </motion.div>
   );
 
@@ -83,24 +83,24 @@ const ProfilePage = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen text-white p-4 sm:p-6 md:p-8 bg-gray-900 fade-in"
+      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex flex-col items-center"
     >
-      <h1 className="text-2xl sm:text-3xl md:text-4xl mb-6 text-center text-blue-400 font-bold">Your Profile</h1>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl mb-6 text-center text-blue-400 font-bold">Your Profile</h1>
       {user ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="max-w-2xl mx-auto p-6 bg-gray-800 rounded-lg shadow-md no-border"
+          className="max-w-3xl w-full p-6 bg-gray-800 rounded-lg shadow-md no-border"
         >
-          <p className="text-lg sm:text-xl mb-2 text-white">Username: <span className="text-gray-300">{username}</span></p>
-          <p className="text-lg sm:text-xl mb-2 text-white">Level: <span className="text-gray-300">{getLevel(points)}</span></p>
-          <p className="text-lg sm:text-xl mb-2 text-white">Total Points: <span className="text-gray-300">{points}</span></p>
-          <p className="text-lg sm:text-xl mb-2 text-white">Completed Lessons: <span className="text-gray-300">{completedLessons.length}</span></p>
+          <p className="text-xl mb-2 text-white">Username: <span className="text-gray-300">{username}</span></p>
+          <p className="text-xl mb-2 text-white">Level: <span className="text-gray-300">{getLevel(points)}</span></p>
+          <p className="text-xl mb-2 text-white">Total Points: <span className="text-gray-300">{points}</span></p>
+          <p className="text-xl mb-2 text-white">Completed Lessons: <span className="text-gray-300">{completedLessons.length}</span></p>
           {completedLessons.length > 0 && (
             <div className="mt-4">
-              <h2 className="text-lg sm:text-xl mb-2 text-blue-400 font-bold">Completed Lessons:</h2>
-              <ul className="list-disc pl-6 text-gray-300">
+              <h2 className="text-xl mb-2 text-blue-400 font-bold">Completed Lessons:</h2>
+              <ul className="list-disc pl-6 text-gray-300 text-xl">
                 {completedLessons.map((title, index) => (
                   <motion.li
                     key={index}
@@ -116,8 +116,8 @@ const ProfilePage = () => {
           )}
           {badges.length > 0 && (
             <div className="mt-4">
-              <h2 className="text-lg sm:text-xl mb-2 text-blue-400 font-bold">Badges:</h2>
-              <ul className="list-disc pl-6 text-gray-300">
+              <h2 className="text-xl mb-2 text-blue-400 font-bold">Badges:</h2>
+              <ul className="list-disc pl-6 text-gray-300 text-xl">
                 {badges.map((badge, index) => (
                   <motion.li
                     key={index}
@@ -133,7 +133,7 @@ const ProfilePage = () => {
           )}
         </motion.div>
       ) : (
-        <p className="text-center text-gray-300">Please log in to view your profile.</p>
+        <p className="text-center text-gray-300 text-xl">Please log in to view your profile.</p>
       )}
     </motion.div>
   );

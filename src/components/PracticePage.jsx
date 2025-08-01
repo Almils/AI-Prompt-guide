@@ -112,9 +112,9 @@ const PracticePage = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex items-center justify-center bg-gray-900"
+      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex items-center justify-center"
     >
-      Loading...
+      <p className="text-xl">Loading...</p>
     </motion.div>
   );
 
@@ -123,14 +123,19 @@ const PracticePage = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen text-white p-4 sm:p-6 md:p-8 bg-gray-900 fade-in"
+      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex flex-col items-center"
     >
-      <h1 className="text-2xl sm:text-3xl md:text-4xl mb-6 text-center text-blue-400 font-bold">Practice Your Prompts</h1>
+      <h1 className="text-3xl sm:text-4xl md:text-5xl mb-6 text-center text-blue-400 font-bold">Practice Your Prompts</h1>
       <motion.textarea
         value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
+        onChange={(e) => {
+          setPrompt(e.target.value);
+          e.target.style.height = 'auto';
+          e.target.style.height = `${e.target.scrollHeight}px`;
+        }}
         placeholder="Write your prompt here (e.g., 'Explain AI in simple terms for beginners, with examples.')"
-        className="w-full h-32 p-3 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 transition"
+        className="w-full max-w-3xl p-4 rounded-md bg-gray-700 border-none text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 transition text-xl resize-none"
+        style={{ minHeight: '200px' }}
         whileFocus={{ scale: 1.02 }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -141,7 +146,7 @@ const PracticePage = () => {
           whileHover={{ scale: 1.05, y: -2 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleSubmit}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+          className="bg-yellow-400 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-500 transition-colors text-xl"
         >
           Score My Prompt
         </motion.button>
@@ -149,7 +154,7 @@ const PracticePage = () => {
           whileHover={{ scale: 1.05, y: -2 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleTestAI}
-          className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 transition"
+          className="bg-yellow-400 text-gray-900 px-6 py-3 rounded-md hover:bg-yellow-500 transition-colors text-xl"
           disabled={aiLoading}
         >
           {aiLoading ? 'Testing...' : 'Test with AI'}
@@ -160,13 +165,13 @@ const PracticePage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="mt-6 p-4 bg-gray-800 rounded-lg shadow-md no-border"
+          className="mt-6 p-4 bg-gray-800 rounded-lg shadow-md no-border w-full max-w-3xl"
         >
-          <p className="text-xl sm:text-2xl text-blue-400 font-bold">Your prompt scored: {score}/10</p>
+          <p className="text-2xl text-blue-400 font-bold">Your prompt scored: {score}/10</p>
           {feedback.length > 0 && (
             <div>
-              <h2 className="text-lg sm:text-xl mt-2 text-blue-400 font-bold">Feedback:</h2>
-              <ul className="list-disc pl-6 text-gray-300">
+              <h2 className="text-xl mt-2 text-blue-400 font-bold">Feedback:</h2>
+              <ul className="list-disc pl-6 text-gray-300 text-xl">
                 {feedback.map((item, index) => (
                   <motion.li
                     key={index}
@@ -187,10 +192,10 @@ const PracticePage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="mt-6 p-4 bg-gray-800 rounded-lg shadow-md no-border"
+          className="mt-6 p-4 bg-gray-800 rounded-lg shadow-md no-border w-full max-w-3xl"
         >
-          <h2 className="text-lg sm:text-xl text-blue-400 font-bold">AI Response:</h2>
-          <p className="text-gray-300">{aiResponse}</p>
+          <h2 className="text-xl text-blue-400 font-bold">AI Response:</h2>
+          <p className="text-xl text-gray-300">{aiResponse}</p>
         </motion.div>
       )}
     </motion.div>

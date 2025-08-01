@@ -1,98 +1,241 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { FaHome, FaBook, FaPen, FaUsers, FaUser, FaInfoCircle, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
 
 const Navigation = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [username, setUsername] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Initialize authentication after mount
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setUser(session.user);
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('username')
-          .eq('id', session.user.id)
-          .single();
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error fetching username:', error);
-          setUsername(session.user.email.split('@')[0]); // Use email prefix as fallback
-        } else {
-          setUsername(data?.username || session.user.email.split('@')[0]);
+    console.log('Navigation useEffect triggered');
+    let isMounted = true;
+
+    const initializeAuth = async () => {
+      try {
+        console.log('Initializing auth...');
+        setLoading(true);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (isMounted) {
+          if (session) {
+            setUser(session.user);
+            console.log('User authenticated:', session.user);
+            const { data, error: profileError } = await supabase
+              .from('profiles')
+              .select('username')
+              .eq('id', session.user.id)
+              .single();
+            if (profileError) {
+              console.error('Profile fetch error:', profileError.message);
+              setUsername(session.user.email.split('@')[0]);
+            } else {
+              setUsername(data?.username || session.user.email.split('@')[0]);
+            }
+          } else {
+            setUser(null);
+            setUsername('');
+          }
+          setLoading(false);
         }
-      } else {
-        setUser(null);
-        setUsername('');
+      } catch (err) {
+        console.error('Auth initialization error:', err.message);
+        if (isMounted) {
+          setError('Authentication failed. Using default navigation.');
+          setLoading(false);
+        }
       }
     };
-    fetchUser();
+
+    initializeAuth();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-      fetchUser();
+      console.log('Auth state changed:', event, session);
+      if (isMounted) initializeAuth();
     });
 
-    return () => authListener.subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
+  // Handle logout
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Error logging out:', error);
-    } else {
+    try {
+      await supabase.auth.signOut();
       navigate('/');
+      setIsMenuOpen(false);
+      setUser(null);
+      setUsername('');
+    } catch (err) {
+      console.error('Logout error:', err.message);
+      setError('Logout failed');
     }
   };
 
-  if (!user) return null; // Hide navigation before login
+  // Render loading or error state
+  if (loading) {
+    return (
+      <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 py-3">
+        <div className="container mx-auto max-w-4xl px-4 text-center text-gray-300">Loading...</div>
+      </nav>
+    );
+  }
 
+  if (error) {
+    return (
+      <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 py-3">
+        <div className="container mx-auto max-w-4xl px-4 text-center text-red-400">{error}</div>
+      </nav>
+    );
+  }
+
+  // Render navigation only if user is set (post-loading)
   return (
-    <nav className="bg-gray-800 p-4 shadow-md no-border">
-      <div className="container flex justify-between items-center">
+    <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 py-3 shadow-md">
+      <div className="container mx-auto flex justify-between items-center max-w-4xl px-4">
+        {/* Username Display */}
+        <div className="text-gray-300 text-lg font-medium">{username ? `Hi, ${username}` : 'Guest'}</div>
+
+        {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden text-white focus:outline-none text-xl"
+          className="md:hidden text-white text-2xl focus:outline-none"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
         >
-          {isMenuOpen ? 'Close' : 'Menu'}
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
-        <ul className={`flex-col md:flex-row md:flex md:space-x-6 ${isMenuOpen ? 'flex' : 'hidden'} md:block text-xl`}>
+
+        {/* Desktop Navigation */}
+        <ul className="hidden md:flex space-x-6 items-center">
           <li>
-            <Link to="/" className="text-white hover:text-blue-400 transition block py-2">Home</Link>
+            <Link to="/" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
+              <FaHome className="text-yellow-400" />
+              <span>Home</span>
+            </Link>
           </li>
           <li>
-            <Link to="/lessons" className="text-white hover:text-blue-400 transition block py-2">Lessons</Link>
+            <Link to="/lessons" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
+              <FaBook className="text-yellow-400" />
+              <span>Lessons</span>
+            </Link>
           </li>
           <li>
-            <Link to="/practice" className="text-white hover:text-blue-400 transition block py-2">Practice</Link>
+            <Link to="/practice" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
+              <FaPen className="text-yellow-400" />
+              <span>Practice</span>
+            </Link>
           </li>
           <li>
-            <Link to="/community" className="text-white hover:text-blue-400 transition block py-2">Community</Link>
+            <Link to="/community" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
+              <FaUsers className="text-yellow-400" />
+              <span>Community</span>
+            </Link>
           </li>
           <li>
-            <Link to="/profile" className="text-white hover:text-blue-400 transition block py-2">Profile</Link>
+            <Link to="/profile" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
+              <FaUser className="text-yellow-400" />
+              <span>Profile</span>
+            </Link>
           </li>
           <li>
-            <Link to="/about" className="text-white hover:text-blue-400 transition block py-2">About</Link>
+            <Link to="/about" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
+              <FaInfoCircle className="text-yellow-400" />
+              <span>About</span>
+            </Link>
           </li>
           <li>
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={handleLogout}
-              className="bg-yellow-400 text-gray-900 px-4 py-2 rounded-md hover:bg-yellow-500 transition text-xl md:text-base"
+              className="flex items-center space-x-2 bg-yellow-400 text-gray-900 px-3 py-1 rounded hover:bg-yellow-500 no-underline"
             >
-              Logout
-            </motion.button>
+              <FaSignOutAlt />
+              <span>Logout</span>
+            </button>
           </li>
         </ul>
-        <div className="hidden md:flex items-center space-x-4">
-          <span className="text-white text-xl md:text-base">Signed in as {username}</span>
-        </div>
+
+        {/* Mobile Navigation */}
+        <ul
+          className={`md:hidden fixed top-16 right-0 w-64 bg-gray-800 text-white p-6 ${
+            isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          } transition-transform duration-300 ease-in-out z-50 flex flex-col space-y-4 text-lg`}
+        >
+          <li>
+            <Link
+              to="/"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <FaHome className="text-yellow-400" />
+              <span>Home</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/lessons"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <FaBook className="text-yellow-400" />
+              <span>Lessons</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/practice"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <FaPen className="text-yellow-400" />
+              <span>Practice</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/community"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <FaUsers className="text-yellow-400" />
+              <span>Community</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/profile"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <FaUser className="text-yellow-400" />
+              <span>Profile</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/about"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <FaInfoCircle className="text-yellow-400" />
+              <span>About</span>
+            </Link>
+          </li>
+          <li>
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 bg-yellow-400 text-gray-900 px-3 py-1 rounded hover:bg-yellow-500 no-underline mt-4"
+            >
+              <FaSignOutAlt />
+              <span>Logout</span>
+            </button>
+          </li>
+        </ul>
       </div>
     </nav>
   );

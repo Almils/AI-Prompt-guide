@@ -1,16 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #111827 0%, #1F2937 100%); /* Dark gradient like Succinct */
-  color: #FFFFFF; /* White text */
+  background: linear-gradient(135deg, #111827 0%, #1F2937 100%);
+  color: #FFFFFF;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -22,7 +23,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 2.5rem; /* Larger for accessibility */
+  font-size: 2.5rem;
 }
 
 h2 {
@@ -30,7 +31,7 @@ h2 {
 }
 
 p, li, input, textarea, button {
-  font-size: 1.25rem; /* Larger for readability */
+  font-size: 1.25rem;
 }
 
 button {
@@ -39,47 +40,47 @@ button {
 
 button:hover {
   transform: scale(1.05) translateY(-2px);
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); /* Blue glow */
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
 }
 
 .bg-gray-800 {
-  background: linear-gradient(135deg, #1F2937 0%, #374151 100%); /* Card gradient */
+  background: linear-gradient(135deg, #1F2937 0%, #374151 100%);
 }
 
 .bg-gray-700 {
-  background-color: #374151; /* Input background */
+  background-color: #374151;
 }
 
 .border-gray-600 {
-  border-color: #4B5563; /* Input borders */
+  border-color: #4B5563;
 }
 
 .text-blue-400 {
-  color: #60A5FA; /* Bright blue */
+  color: #60A5FA;
 }
 
 .bg-blue-500 {
-  background-color: #3B82F6; /* Vibrant blue */
+  background-color: #3B82F6;
 }
 
 .bg-blue-600 {
-  background-color: #2563EB; /* Hover blue */
+  background-color: #2563EB;
 }
 
 .bg-yellow-400 {
-  background-color: #FCD34D; /* Succinct’s yellow for CTAs */
+  background-color: #FCD34D;
 }
 
 .bg-yellow-500 {
-  background-color: #FBBF24; /* Hover yellow */
+  background-color: #FBBF24;
 }
 
 .text-gray-300 {
-  color: #D1D5DB; /* Light gray */
+  color: #D1D5DB;
 }
 
 .text-green-400 {
-  color: #34D399; /* Green for completed */
+  color: #34D399;
 }
 
 .fade-in {
@@ -95,9 +96,9 @@ button:hover {
   border: none;
 }
 
-/* Center content */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
+  width: 100%;
 }
