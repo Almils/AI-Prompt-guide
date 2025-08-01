@@ -18,27 +18,24 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Inter', sans-serif;
-  font-weight: 500; /* Reduced from 700 for elegance */
+  font-weight: 500;
 }
 
 h1 {
-  font-size: 1.875rem; /* Reduced from 2.5rem */
+  font-size: 1.875rem; /* text-2xl sm:text-3xl md:text-4xl */
 }
 
 h2 {
-  font-size: 1.5rem; /* Reduced from 1.875rem */
+  font-size: 1.5rem; /* text-xl sm:text-2xl */
 }
 
 .logo {
-  font-size: 1.5rem; /* Reduced logo text size, adjust if logo is an image */
+  font-size: 1.5rem;
   font-weight: 500;
-  max-width: 50px
-
-
 }
 
 p, li, input, textarea, button {
-  font-size: 1rem; /* Reduced from 1.25rem for consistency */
+  font-size: 1rem;
 }
 
 button {
@@ -83,23 +80,35 @@ button:hover {
   to { opacity: 1; transform: translateY(0); }
 }
 
-.no-border {
+/* Remove all border lines globally */
+* {
   border: none;
+  outline: none;
+}
+
+/* Apply padding to all pages */
+.page-content {
+  padding: 1rem 2rem;
+}
+
+@media (min-width: 768px) {
+  .page-content {
+    padding: 2rem 4rem;
+  }
+}
+
+@media (max-width: 767px) {
+  body {
+    padding: 1rem 0;
+  }
+  .page-content {
+    padding: 1rem; /* Reduced for mobile to match design intent */
+  }
 }
 
 .container {
-  max-width: 1280px; /* Adjusted for desktop fit */
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0;
   width: 100%;
-}
-
-/* Mobile-specific spacing */
-@media (max-width: 767px) {
-  .container {
-    padding: 1rem 2rem; /* Adds space between screen edges and content */
-  }
-  body {
-    padding: 1rem 0; /* Adds vertical space on mobile */
-  }
 }

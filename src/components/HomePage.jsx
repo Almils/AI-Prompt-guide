@@ -40,9 +40,8 @@ const HomePage = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700"
+      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 page-content"
     >
-      {/* Heading */}
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -51,8 +50,6 @@ const HomePage = () => {
       >
         {user ? `Welcome, ${username}!` : 'Welcome to AI Prompt Guide'}
       </motion.h1>
-
-      {/* Subheading */}
       <motion.p
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -61,8 +58,6 @@ const HomePage = () => {
       >
         Explore lessons, practice prompts, and join our community to master AI prompting!
       </motion.p>
-
-      {/* Buttons */}
       <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
         <motion.button
           whileHover={{ scale: 1.05, y: -2 }}

@@ -94,11 +94,9 @@ const Navigation = () => {
 
   return (
     <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 py-3 shadow-md">
-      <div className="container mx-auto max-w-4xl px-4 flex flex-col md:flex-row justify-between items-center">
-        {/* Header Section */}
-        <div className="flex items-center space-x-4 mb-2 md:mb-0">
-          <div className="text-gray-300 text-lg font-medium">{username ? `Hi, ${username}` : 'Guest'}</div>
-        </div>
+      <div className="container mx-auto max-w-4xl px-4 flex items-center justify-between">
+        {/* Username */}
+        <div className="text-gray-300 text-lg font-medium">{username ? `Hi, ${username}` : 'Guest'}</div>
 
         {/* Menu Toggle and Navigation */}
         <div className="flex items-center space-x-4">
