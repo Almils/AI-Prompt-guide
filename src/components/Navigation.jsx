@@ -11,15 +11,15 @@ const Navigation = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Initialize authentication after mount
+  // Initialize authentication
   useEffect(() => {
     console.log('Navigation useEffect triggered');
     let isMounted = true;
 
     const initializeAuth = async () => {
       try {
-        console.log('Initializing auth...');
         setLoading(true);
+        console.log('Fetching session...');
         const { data: { session } } = await supabase.auth.getSession();
         if (isMounted) {
           if (session) {
@@ -95,81 +95,34 @@ const Navigation = () => {
     );
   }
 
-  // Render navigation only if user is set (post-loading)
   return (
     <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 py-3 shadow-md">
-      <div className="container mx-auto flex justify-between items-center max-w-4xl px-4">
+      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center max-w-4xl px-4">
         {/* Username Display */}
-        <div className="text-gray-300 text-lg font-medium">{username ? `Hi, ${username}` : 'Guest'}</div>
+        <div className="text-gray-300 text-lg font-medium mb-2 md:mb-0">{username ? `Hi, ${username}` : 'Guest'}</div>
 
         {/* Mobile Menu Toggle */}
         <button
           className="md:hidden text-white text-2xl focus:outline-none"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          onClick={() => {
+            console.log('Menu toggle clicked, isMenuOpen:', !isMenuOpen);
+            setIsMenuOpen(!isMenuOpen);
+          }}
           aria-label="Toggle menu"
         >
           {isMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
-        {/* Desktop Navigation */}
-        <ul className="hidden md:flex space-x-6 items-center">
-          <li>
-            <Link to="/" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
-              <FaHome className="text-yellow-400" />
-              <span>Home</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/lessons" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
-              <FaBook className="text-yellow-400" />
-              <span>Lessons</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/practice" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
-              <FaPen className="text-yellow-400" />
-              <span>Practice</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/community" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
-              <FaUsers className="text-yellow-400" />
-              <span>Community</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/profile" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
-              <FaUser className="text-yellow-400" />
-              <span>Profile</span>
-            </Link>
-          </li>
-          <li>
-            <Link to="/about" className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline">
-              <FaInfoCircle className="text-yellow-400" />
-              <span>About</span>
-            </Link>
-          </li>
-          <li>
-            <button
-              onClick={handleLogout}
-              className="flex items-center space-x-2 bg-yellow-400 text-gray-900 px-3 py-1 rounded hover:bg-yellow-500 no-underline"
-            >
-              <FaSignOutAlt />
-              <span>Logout</span>
-            </button>
-          </li>
-        </ul>
-
-        {/* Mobile Navigation */}
+        {/* Desktop and Mobile Navigation */}
         <ul
-          className={`md:hidden fixed top-16 right-0 w-64 bg-gray-800 text-white p-6 ${
-            isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-          } transition-transform duration-300 ease-in-out z-50 flex flex-col space-y-4 text-lg`}
+          className={`${
+            isMenuOpen ? 'block' : 'hidden'
+          } md:flex md:space-x-6 items-center mt-2 md:mt-0 w-full md:w-auto`}
         >
           <li>
             <Link
               to="/"
-              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline py-1"
               onClick={() => setIsMenuOpen(false)}
             >
               <FaHome className="text-yellow-400" />
@@ -179,7 +132,7 @@ const Navigation = () => {
           <li>
             <Link
               to="/lessons"
-              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline py-1"
               onClick={() => setIsMenuOpen(false)}
             >
               <FaBook className="text-yellow-400" />
@@ -189,7 +142,7 @@ const Navigation = () => {
           <li>
             <Link
               to="/practice"
-              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline py-1"
               onClick={() => setIsMenuOpen(false)}
             >
               <FaPen className="text-yellow-400" />
@@ -199,7 +152,7 @@ const Navigation = () => {
           <li>
             <Link
               to="/community"
-              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline py-1"
               onClick={() => setIsMenuOpen(false)}
             >
               <FaUsers className="text-yellow-400" />
@@ -209,7 +162,7 @@ const Navigation = () => {
           <li>
             <Link
               to="/profile"
-              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline py-1"
               onClick={() => setIsMenuOpen(false)}
             >
               <FaUser className="text-yellow-400" />
@@ -219,7 +172,7 @@ const Navigation = () => {
           <li>
             <Link
               to="/about"
-              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline"
+              className="flex items-center space-x-2 text-gray-300 hover:text-yellow-400 no-underline py-1"
               onClick={() => setIsMenuOpen(false)}
             >
               <FaInfoCircle className="text-yellow-400" />
@@ -229,7 +182,7 @@ const Navigation = () => {
           <li>
             <button
               onClick={handleLogout}
-              className="flex items-center space-x-2 bg-yellow-400 text-gray-900 px-3 py-1 rounded hover:bg-yellow-500 no-underline mt-4"
+              className="flex items-center space-x-2 bg-yellow-400 text-gray-900 px-3 py-1 rounded hover:bg-yellow-500 no-underline mt-2 md:mt-0"
             >
               <FaSignOutAlt />
               <span>Logout</span>
