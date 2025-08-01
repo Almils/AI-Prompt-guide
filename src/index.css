@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,19 +18,27 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Inter', sans-serif;
-  font-weight: 700;
+  font-weight: 500; /* Reduced from 700 for elegance */
 }
 
 h1 {
-  font-size: 2.5rem;
+  font-size: 1.875rem; /* Reduced from 2.5rem */
 }
 
 h2 {
-  font-size: 1.875rem;
+  font-size: 1.5rem; /* Reduced from 1.875rem */
+}
+
+.logo {
+  font-size: 1.5rem; /* Reduced logo text size, adjust if logo is an image */
+  font-weight: 500;
+  max-width: 50px
+
+
 }
 
 p, li, input, textarea, button {
-  font-size: 1.25rem;
+  font-size: 1rem; /* Reduced from 1.25rem for consistency */
 }
 
 button {
@@ -51,20 +58,8 @@ button:hover {
   background-color: #374151;
 }
 
-.border-gray-600 {
-  border-color: #4B5563;
-}
-
 .text-blue-400 {
   color: #60A5FA;
-}
-
-.bg-blue-500 {
-  background-color: #3B82F6;
-}
-
-.bg-blue-600 {
-  background-color: #2563EB;
 }
 
 .bg-yellow-400 {
@@ -77,10 +72,6 @@ button:hover {
 
 .text-gray-300 {
   color: #D1D5DB;
-}
-
-.text-green-400 {
-  color: #34D399;
 }
 
 .fade-in {
@@ -97,8 +88,18 @@ button:hover {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1280px; /* Adjusted for desktop fit */
   margin: 0 auto;
   padding: 1rem;
   width: 100%;
+}
+
+/* Mobile-specific spacing */
+@media (max-width: 767px) {
+  .container {
+    padding: 1rem 2rem; /* Adds space between screen edges and content */
+  }
+  body {
+    padding: 1rem 0; /* Adds vertical space on mobile */
+  }
 }
