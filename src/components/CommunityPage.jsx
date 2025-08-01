@@ -1,212 +1,175 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const CommunityPage = () => {
+  const navigate = useNavigate();
   const [prompts, setPrompts] = useState([]);
-  const [newPrompt, setNewPrompt] = useState('');
-  const [comments, setComments] = useState({});
-  const [newComment, setNewComment] = useState({});
+  const [newComment, setNewComment] = useState('');
+  const [replyTo, setReplyTo] = useState(null);
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserAndPrompts = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setUser(session.user);
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('username')
-          .eq('id', session.user.id)
-          .single();
-        setUser({ ...session.user, username: profileData?.username || session.user.email.split('@')[0] });
-      }
+      setUser(session?.user || null);
 
       const { data: promptsData, error: promptsError } = await supabase
         .from('prompts')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (promptsError) {
-        console.error('Error fetching prompts:', promptsError);
-        toast.error('Failed to load prompts: ' + promptsError.message);
-      } else {
-        setPrompts(promptsData);
-      }
-
-      const { data: commentsData, error: commentsError } = await supabase
-        .from('comments')
-        .select('*')
-        .order('created_at', { ascending: true });
-      if (commentsError) {
-        console.error('Error fetching comments:', commentsError);
-        toast.error('Failed to load comments: ' + commentsError.message);
-      } else {
-        const commentsByPrompt = commentsData.reduce((acc, comment) => {
-          acc[comment.prompt_id] = acc[comment.prompt_id] || [];
-          acc[comment.prompt_id].push(comment);
-          return acc;
-        }, {});
-        setComments(commentsByPrompt);
-      }
-      setLoading(false);
+        .select('*, comments(*, profiles(username)), likes(count)')
+        .order('created_at', { ascending: false })
+        .leftJoin('likes', { on: 'id', select: { count: 'count(*)' } }, { foreignTable: 'prompts' });
+      if (promptsError) console.error('Error fetching prompts:', promptsError);
+      else setPrompts(promptsData);
     };
     fetchUserAndPrompts();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+      fetchUserAndPrompts();
+    });
+
+    return () => authListener.subscription.unsubscribe();
   }, []);
 
-  const handleSubmitPrompt = async () => {
+  const handleCommentSubmit = async (promptId, parentId = null) => {
     if (!user) {
-      toast.error('Please log in to post a prompt.');
+      navigate('/login');
       return;
     }
-    if (!newPrompt.trim()) {
-      toast.error('Please enter a prompt.');
-      return;
-    }
+    if (!newComment.trim()) return;
 
-    const { data, error } = await supabase
-      .from('prompts')
-      .insert({ user_id: user.id, username: user.username, content: newPrompt })
-      .select();
-    if (error) {
-      console.error('Error posting prompt:', error);
-      toast.error('Failed to post prompt: ' + error.message);
-    } else {
-      setPrompts([data[0], ...prompts]);
-      setNewPrompt('');
-      toast.success('Prompt posted successfully!');
+    const { error } = await supabase.from('comments').insert({
+      prompt_id: promptId,
+      parent_id: parentId,
+      user_id: user.id,
+      content: newComment,
+    });
+    if (error) console.error('Error submitting comment:', error);
+    else {
+      setNewComment('');
+      setReplyTo(null);
+      fetchPrompts();
     }
   };
 
-  const handleSubmitComment = async (promptId) => {
+  const handleLike = async (promptId) => {
     if (!user) {
-      toast.error('Please log in to comment.');
-      return;
-    }
-    if (!newComment[promptId]?.trim()) {
-      toast.error('Please enter a comment.');
+      navigate('/login');
       return;
     }
 
-    const { data, error } = await supabase
-      .from('comments')
-      .insert({
+    const { data: existingLike } = await supabase
+      .from('likes')
+      .select('*')
+      .eq('prompt_id', promptId)
+      .eq('user_id', user.id)
+      .single();
+
+    if (existingLike) {
+      const { error } = await supabase
+        .from('likes')
+        .delete()
+        .eq('id', existingLike.id);
+      if (error) console.error('Error unliking:', error);
+    } else {
+      const { error } = await supabase.from('likes').insert({
         prompt_id: promptId,
         user_id: user.id,
-        username: user.username,
-        content: newComment[promptId],
-      })
-      .select();
-    if (error) {
-      console.error('Error posting comment:', error);
-      toast.error('Failed to post comment: ' + error.message);
-    } else {
-      setComments({
-        ...comments,
-        [promptId]: [...(comments[promptId] || []), data[0]],
       });
-      setNewComment({ ...newComment, [promptId]: '' });
-      toast.success('Comment posted successfully!');
+      if (error) console.error('Error liking:', error);
     }
+    fetchPrompts();
   };
 
-  if (loading) return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex items-center justify-center"
-    >
-      <p className="text-xl">Loading...</p>
-    </motion.div>
-  );
+  const fetchPrompts = async () => {
+    const { data } = await supabase
+      .from('prompts')
+      .select('*, comments(*, profiles(username)), likes(count)')
+      .order('created_at', { ascending: false })
+      .leftJoin('likes', { on: 'id', select: { count: 'count(*)' } }, { foreignTable: 'prompts' });
+    setPrompts(data);
+  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen text-white p-4 sm:p-6 md:p-8 flex flex-col items-center"
-    >
-      <h1 className="text-3xl sm:text-4xl md:text-5xl mb-6 text-center text-blue-400 font-bold">Community Forum</h1>
-      {user && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="mb-6 p-4 bg-gray-800 rounded-lg shadow-md no-border w-full max-w-3xl"
-        >
-          <textarea
-            value={newPrompt}
-            onChange={(e) => setNewPrompt(e.target.value)}
-            placeholder="Share a prompt..."
-            className="w-full h-24 p-3 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 transition text-xl"
-          />
-          <motion.button
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleSubmitPrompt}
-            className="mt-2 bg-yellow-400 text-gray-900 px-4 py-2 rounded-md hover:bg-yellow-500 transition text-xl"
-          >
-            Post Prompt
-          </motion.button>
-        </motion.div>
-      )}
-      <div className="space-y-6 w-full max-w-3xl">
-        {prompts.map((prompt) => (
-          <motion.div
-            key={prompt.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: prompt.id * 0.1 }}
-            whileHover={{ scale: 1.02 }}
-            className="p-6 bg-gray-800 rounded-lg shadow-md no-border"
-          >
-            <p className="text-xl text-white"><strong>{prompt.username}</strong>: {prompt.content}</p>
-            <p className="text-lg text-gray-400 mt-1">
-              Posted: {new Date(prompt.created_at).toLocaleString()}
-            </p>
-            <div className="mt-4">
-              <h3 className="text-xl text-blue-400 font-bold">Comments:</h3>
-              {(comments[prompt.id] || []).map((comment) => (
-                <motion.div
-                  key={comment.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="ml-4 mt-2 p-3 bg-gray-700 rounded-md no-border"
-                >
-                  <p className="text-xl text-white"><strong>{comment.username}</strong>: {comment.content}</p>
-                  <p className="text-lg text-gray-400">
-                    Posted: {new Date(comment.created_at).toLocaleString()}
-                  </p>
-                </motion.div>
-              ))}
-              {user && (
-                <div className="mt-4 ml-4">
-                  <textarea
-                    value={newComment[prompt.id] || ''}
-                    onChange={(e) =>
-                      setNewComment({ ...newComment, [prompt.id]: e.target.value })
-                    }
-                    placeholder="Add a comment..."
-                    className="w-full h-16 p-3 rounded-md bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 transition text-xl"
-                  />
-                  <motion.button
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleSubmitComment(prompt.id)}
-                    className="mt-2 bg-yellow-400 text-gray-900 px-4 py-2 rounded-md hover:bg-yellow-500 transition text-xl"
-                  >
-                    Post Comment
-                  </motion.button>
-                </div>
-              )}
+    <div className="page-content">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl text-blue-400 font-medium mb-6">Community</h1>
+      {prompts.map((prompt) => {
+        const likeCount = prompt.likes?.[0]?.count || 0;
+        const isLiked = prompt.likes?.some((like) => like.user_id === user?.id);
+        return (
+          <div key={prompt.id} className="mb-6 p-4 bg-gray-800 rounded-lg">
+            <p className="text-gray-300">{prompt.content}</p>
+            <div className="flex space-x-4 mt-2">
+              <button
+                onClick={() => handleLike(prompt.id)}
+                className={`text-yellow-400 hover:text-yellow-500 ${isLiked ? 'font-bold' : ''}`}
+              >
+                {isLiked ? 'Unlike' : 'Like'} ({likeCount})
+              </button>
+              <button
+                onClick={() => setReplyTo(prompt.id)}
+                className="text-blue-400 hover:text-blue-500"
+              >
+                Reply
+              </button>
             </div>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
+            {/* Comments and Replies */}
+            {prompt.comments && prompt.comments.length > 0 && (
+              <div className="ml-4 mt-2">
+                {prompt.comments.map((comment) => (
+                  <div key={comment.id} className="mb-2 p-2 bg-gray-700 rounded">
+                    <p className="text-gray-300">
+                      <span className="font-medium">{comment.profiles.username}: </span>
+                      {comment.content}
+                    </p>
+                    <button
+                      onClick={() => setReplyTo(comment.id)}
+                      className="text-blue-400 hover:text-blue-500 mt-1"
+                    >
+                      Reply
+                    </button>
+                    {/* Nested Replies */}
+                    {comment.comments && comment.comments.length > 0 && (
+                      <div className="ml-4 mt-2">
+                        {comment.comments.map((nestedComment) => (
+                          <div key={nestedComment.id} className="mb-2 p-2 bg-gray-600 rounded">
+                            <p className="text-gray-300">
+                              <span className="font-medium">
+                                {nestedComment.profiles.username}:{' '}
+                              </span>
+                              {nestedComment.content}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder={
+                replyTo
+                  ? `Replying to ${prompts
+                      .flatMap((p) => [p, ...p.comments])
+                      .find((c) => c.id === replyTo)?.content || 'comment'}...`
+                  : 'Add a comment...'
+              }
+              className="w-full p-2 mt-2 text-gray-900 rounded"
+            />
+            <button
+              onClick={() => handleCommentSubmit(prompt.id, replyTo)}
+              className="bg-yellow-400 text-gray-900 px-2 py-1 rounded mt-2"
+            >
+              Submit
+            </button>
+          </div>
+        );
+      })}
+    </div>
   );
 };
 

@@ -95,13 +95,13 @@ const Navigation = () => {
   return (
     <nav className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 py-3 shadow-md">
       <div className="container mx-auto max-w-4xl px-4 flex items-center justify-between">
-        {/* Username */}
+        {/* Persistent Username (Left Side) */}
         <div className="text-gray-300 text-lg font-medium">{username ? `Hi, ${username}` : 'Guest'}</div>
 
-        {/* Menu Toggle and Navigation */}
-        <div className="flex items-center space-x-4">
+        {/* Menu Toggle and Navigation (Right Side) */}
+        <div className="flex items-center">
           <button
-            className="md:hidden text-white text-2xl focus:outline-none"
+            className="md:hidden text-white text-2xl focus:outline-none mr-4"
             onClick={() => {
               console.log('Menu toggle clicked, isMenuOpen:', !isMenuOpen);
               setIsMenuOpen(!isMenuOpen);
@@ -114,7 +114,7 @@ const Navigation = () => {
           <ul
             className={`${
               isMenuOpen ? 'block' : 'hidden'
-            } md:flex md:space-x-6 items-center mt-2 md:mt-0 w-full md:w-auto`}
+            } md:flex md:space-x-6 items-center absolute md:static top-12 right-4 md:right-auto w-48 md:w-auto bg-gray-800 md:bg-transparent p-4 md:p-0 rounded-md md:rounded-none`}
           >
             <li>
               <Link
@@ -179,7 +179,7 @@ const Navigation = () => {
             <li>
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-2 bg-yellow-400 text-gray-900 px-3 py-1 rounded hover:bg-yellow-500 no-underline mt-2 md:mt-0"
+                className="flex items-center space-x-2 bg-yellow-400 text-gray-900 px-3 py-1 rounded hover:bg-yellow-500 no-underline mt-2 md:mt-0 w-full md:w-auto"
               >
                 <FaSignOutAlt />
                 <span>Logout</span>
